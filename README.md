@@ -1,2 +1,1 @@
-# semantic_image_label_to_labelme_json
 将语义分割的灰度图像标签转换成实例分割的labelme格式的json标签
