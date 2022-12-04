@@ -1,35 +1,15 @@
+# 用于将语义分割的灰度图像标签转换成实例分割的labelme格式的json标签
+# 一张标签图片上的目标类别只能有一类，多类区分不出来，且目标类别像素值理想情况下应为255（标签图片处理过程中会进行二值化）
+# 需要特别注意：
+# data['imagePath'] = img_path.split('/')[-1][:-3] + 'jpg'
+# json_path = jsons_path + image_name[:-3] + 'json'
+# 以上这两行可能需要小修改，均为名字格式相关的修改
+
 import os
 import cv2
 import json
 import numpy as np
 from tqdm import tqdm
-
-# KolektorSDD2专用，直接删除，注意拷贝
-def delete_not_label_images(imgs_path):
-    for label_name in tqdm(os.listdir(imgs_path)):
-        if 'GT' not in label_name:
-            label_path = imgs_path + label_name
-            os.remove(label_path)
-
-# KolektorSDD2专用，直接删除，注意拷贝
-def delete_label_images(imgs_path):
-    for label_name in tqdm(os.listdir(imgs_path)):
-        if 'GT' in label_name:
-            label_path = imgs_path + label_name
-            os.remove(label_path)
-
-# 要确保标签图片是二值化图片，即值只有0和255
-def show_images_unique_values(imgs_path):
-    label_list = []
-    for label_name in tqdm(os.listdir(imgs_path)):
-        label_path = imgs_path + label_name
-        img = cv2.imread(label_path, cv2.IMREAD_GRAYSCALE)
-        key = np.unique(img)
-        list = key.tolist()
-        for label in list:
-            if label not in label_list:
-                label_list.append(label)
-    print(label_list)
 
 def one_image_to_json(img_path, json_path, label_name):
     null = None
@@ -86,6 +66,7 @@ def images_to_jsons(imgs_path, jsons_path, label_name):
         json_path = jsons_path + image_name[:-3] + 'json'  #############这里需要特别注意，可能需要微调
         one_image_to_json(img_path, json_path, label_name)
 
+# 将RSDDs数据集图片标签转换成labelme的json标签
 def RSDDs():
     imgs_path1 = './Type-I RSDDs dataset/GroundTruth/'
     jsons_path1 = './Type-I RSDDs dataset/jsons/'
@@ -95,12 +76,16 @@ def RSDDs():
     images_to_jsons(imgs_path1, jsons_path1, label_name)
     images_to_jsons(imgs_path2, jsons_path2, label_name)
 
+# 将KolektorSDD数据集图片标签转换成labelme的json标签
+# https://www.vicos.si/resources/kolektorsdd/
 def KolektorSDD1():
     imgs_path = './image_labels/'
     jsons_path = './jsons/'
     label_name = 'defect'
     images_to_jsons(imgs_path, jsons_path, label_name)
 
+# 将KolektorSDD2数据集图片标签转换成labelme的json标签
+# https://www.vicos.si/resources/kolektorsdd2/
 def KolektorSDD2():
     imgs_path1 = './train/'
     imgs_path2 = './test/'
@@ -111,6 +96,8 @@ def KolektorSDD2():
     images_to_jsons(imgs_path1, jsons_path, label_name)
     images_to_jsons(imgs_path2, jsons_path, label_name)
 
+# 将Magnetic Tile数据集图片标签转换成labelme的json标签
+# https://github.com/Charmve/Surface-Defect-Detection/tree/master/Magnetic-Tile-Defect
 def Magnetic_Tile():
     MT_Blowhole_path = './MT_Blowhole/Imgs/'
     MT_Break_path = './MT_Break/Imgs/'
@@ -125,4 +112,4 @@ def Magnetic_Tile():
     images_to_jsons(MT_Uneven_path, jsons_path, 'Uneven')
 
 if __name__ == '__main__':
-    pass
+    RSDDs()
